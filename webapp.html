@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+	// Store games in array. Home and away team both have their own arrays.
+	// Start at 0.
+	var homeGames = new Array(6).fill(0);
+	var awayGames = new Array(6).fill(0);
+	// Store sets
+	var homeSets = new Array(6).fill(0);
+	var awaySets = new Array(6).fill(0);
+	// Store printScores. This is the historical score (ie. only completed sets)
+	// and will not include the current active set score.
+	var printScores = new Array(6).fill("");
+
+	// Need to update number to the current value, increment/decrement that value by 1, then update
+	// the current value.
+	function increase(court, oldNum, valToChange, homeGame) {
+		if (homeSets[court] != 2 && awaySets[court] != 2) {
+			oldNum = document.getElementById(valToChange).innerHTML;
+			oldNum++;
+			document.getElementById(valToChange).innerHTML = oldNum;
+			// Check if it was a game for the home or away team. Increment score
+			// in homePrint or awayPrint.
+			if (homeGame) {
+				homeGames[court] = oldNum;
+			}
+			else {
+				awayGames[court] = oldNum;
+			}
+			
+			// Update the court overall score (score for entire match)
+			var newCourt = printScores[court] + homeGames[court].toString() + "-" + awayGames[court].toString();
+			if (court == 0) {
+				document.getElementById("court1").innerHTML = newCourt;
+			}
+		}
+
+		// Check if the set is over
+		// Home team won
+		if (homeGame) {
+			// If set is over (6-* or 7-5, ignore 6-6)
+			if ((homeGames[court] == 6 && awayGames[court] != 5 && awayGames[court] != 6) || homeGames[court] == 7 && awayGames[court] == 5) {
+				printScores[court] += (homeGames[court].toString() + "-" + awayGames[court].toString()) + " ";
+				console.log((homeGames[court].toString() + "-" + awayGames[court].toString()));
+				homeSets[court] += 1;
+				homeGames[court] = 0;
+				awayGames[court] = 0;
+				if (court == 0) {
+					document.getElementById("match1home").innerHTML = 0;
+					document.getElementById("match1away").innerHTML = 0;
+				}
+			}
+			// If set is over from tiebreak
+			else if (homeGames[court] == 7 && awayGames[court] == 6) {
+				var tbScore = prompt("Tiebreak loser's points: ");
+				printScores[court] += (homeGames[court].toString() + "-" + awayGames[court].toString() + "(" + tbScore.toString() + ") ");
+				console.log((homeGames[court].toString() + "-" + awayGames[court].toString()) + "(" + tbScore.toString() + ") ");
+				homeSets[court] += 1;
+				homeGames[court] = 0;
+				awayGames[court] = 0;
+				if (court == 0) {
+					document.getElementById("match1home").innerHTML = 0;
+					document.getElementById("match1away").innerHTML = 0;
+					document.getElementById("court1").innerHTML = printScores[court];
+				}
+			}
+		}
+		// Away team won
+		else {
+			// If set is over (*-6 or 5-7, ignore 6-6)
+			if ((awayGames[court] == 6 && homeGames[court] != 5 && homeGames[court] != 6) || awayGames[court] == 7 && homeGames[court] == 5) {
+				printScores[court] += (homeGames[court].toString() + "-" + awayGames[court].toString()) + " ";
+				console.log((homeGames[court].toString() + "-" + awayGames[court].toString()));
+				awaySets[court] += 1;
+				homeGames[court] = 0;
+				awayGames[court] = 0;
+				if (court == 0) {
+					document.getElementById("match1home").innerHTML = 0;
+					document.getElementById("match1away").innerHTML = 0;
+				}
+			}
+			// If set is over from tiebreak
+			else if (awayGames[court] == 7 && homeGames[court] == 6) {
+				var tbScore = prompt("Tiebreak loser's points: ");
+				printScores[court] += (homeGames[court].toString() + "-" + awayGames[court].toString() + "(" + tbScore.toString() + ") ");
+				console.log((homeGames[court].toString() + "-" + awayGames[court].toString()) + "(" + tbScore.toString() + ") ");
+				awaySets[court] += 1;
+				homeGames[court] = 0;
+				awayGames[court] = 0;
+				if (court == 0) {
+					document.getElementById("match1home").innerHTML = 0;
+					document.getElementById("match1away").innerHTML = 0;
+				}
+			}
+		}
+	}
+
+	// Works like increase, but with a check to not go below 0.
+	function decrease(court, oldNum, valToChange, homeGame) {
+		oldNum = document.getElementById(valToChange).innerHTML;
+		oldNum--;
+		if (oldNum < 0) {
+			oldNum = 0;
+		}
+		if (homeGame) {
+			homeGames[court] = oldNum;
+		}
+		else {
+			awayGames[court] = oldNum;
+		}
+		document.getElementById(valToChange).innerHTML = oldNum;
+		
+		var newCourt = printScores[court] + " " + homeGames[court].toString() + "-" + awayGames[court].toString();
+		document.getElementById("court1").innerHTML = newCourt;
+	}
+</script>
+<style>
+table.mainTable {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 2px solid;
+    border-collapse: collapse;
+}
+
+table.match {
+	height: 100%;
+	width: 100%;
+	border: none;
+	border-collapse: collapse;
+}
+
+tr.twoptfive {
+	height: 2.5%;
+}
+.five {
+	height: 5%;
+}
+.ten {
+	height: 10%;
+}
+.fifteen {
+	height: 15%;
+}
+.twentyfive {
+	height: 10%;
+}
+
+
+th.main {
+	border: 2px solid;
+    height: 50%;
+}
+
+th.match {
+	width: 50%;
+}
+.five {
+	width: 5%;
+}
+.twenty {
+	width: 20%;
+}
+.fifty {
+	width: 50%;
+}
+
+.btnclass {
+	font-size: 16px;
+}
+</style>
+
+</head>
+
+<!--
+Write functions that take a court number as a parameter. They will increase and decrease the game score on that court.
+-->
+<body>
+	<div>
+		<table class="mainTable">
+			<tr>
+				<th class="main">
+					<table class="match">
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">Court 1</th><th class="fifty"><font size="4"><span id="court1">0-0</span></font></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">RPI</th><th class="fifty"></th><th class="twenty">BRD</th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="+" onclick="increase(0, homeGames[0], 'match1home', true)" class="btnclass"></th><th class="fifty"><font size="6"><span id="match1home">0</span>-<span id="match1away">0</span></font></th><th class="twenty"><input type="button" value="+" onclick="increase(0, awayGames[0], 'match1away', false)" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="-" onclick="decrease(0, homeGames[0], 'match1home', true)" class="btnclass"></th><th class="fifty"></th><th class="twenty"><input type="button" value="-" onclick="decrease(0, awayGames[0], 'match1away', false)" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="fifteen"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+					</table>
+				</th>
+				<th class="main">
+					<table class="match">
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">Court 2</th><th class="fifty"><font size="4">6-0 6-0 5-0</font></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">RPI</th><th class="fifty"></th><th class="twenty">BRD</th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="fifty"><font size="6">5-0</font></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="fifty"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="fifteen"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+					</table>
+				</th>
+				<th class="main">
+					<table class="match">
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">Court 3</th><th class="fifty"><font size="4">6-0 6-0 5-0</font></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">RPI</th><th class="fifty"></th><th class="twenty">BRD</th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="fifty"><font size="6">5-0</font></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="fifty"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="fifteen"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+					</table>
+				</th>
+			</tr>
+			<tr>
+				<th class="main">
+					<table class="match">
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">Court 4</th><th class="fifty"><font size="4">6-0 6-0 5-0</font></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">RPI</th><th class="fifty"></th><th class="twenty">BRD</th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="fifty"><font size="6">5-0</font></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="fifty"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="fifteen"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+					</table>
+				</th>
+				<th class="main">
+					<table class="match">
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">Court 5</th><th class="fifty"><font size="4">6-0 6-0 5-0</font></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">RPI</th><th class="fifty"></th><th class="twenty">BRD</th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="fifty"><font size="6">5-0</font></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="fifty"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="fifteen"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+					</table>
+				</th>
+				<th class="main">
+					<table class="match">
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">Court 6</th><th class="fifty"><font size="4">6-0 6-0 5-0</font></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="five"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="ten"><th class="five"></th><th class="twenty">RPI</th><th class="fifty"></th><th class="twenty">BRD</th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="fifty"><font size="6">5-0</font></th><th class="twenty"><input type="button" value="+" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="twoptfive"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+						<tr class="twentyfive"><th class="five"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="fifty"></th><th class="twenty"><input type="button" value="-" class="btnclass"></th><th class="five"></th></tr>
+						<tr class="fifteen"><th class="five"></th><th class="twenty"></th><th class="fifty"></th><th class="twenty"></th><th class="five"></th></tr>
+					</table>
+				</th>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
